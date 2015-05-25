@@ -1,0 +1,169 @@
+//
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+    #import "blocktypedef.h"
+    #import <OpenUDID/OpenUDID.h>
+    #import <CoreData+MagicalRecord.h>
+#endif
+
+#define ApplicationDelegate                 ((AppDelegate *)[[UIApplication sharedApplication] delegate])
+
+#define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_IPHONE_5 (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 568.0f)
+#define IS_RETINA ([[UIScreen mainScreen] scale] == 2.0f)
+
+#define IS_WIDTH_320 ([[UIScreen mainScreen] bounds].size.width==320.f)
+#define IS_WIDTH_375 ([[UIScreen mainScreen] bounds].size.width==375.f)
+#define IS_WIDTH_414 ([[UIScreen mainScreen] bounds].size.width==414.0f)
+
+#ifdef IS_WIDTH_320
+#define HOME_HEAD_WIDTH  186.0f
+#define HOME_HEAD_HEIGHT 220.0f
+#define HOME_CELL_HEIGHT 107.0f
+#define SALE_CELL_HEIGHT 128.0f
+#define MAP_CELL_HEIGHT  128.0f
+#define MAP_LEFT_CELL_WIDTH     195.0f
+#define MAP_LEFT_CELL_HEIGHT    113.0f
+#define MAP_RIGHT_CELL_WIDTH    125.0f
+#define MAP_RIGHT_CELL_HEIGHT   226.0f
+#endif
+
+#ifdef IS_WIDTH_375
+#define HOME_HEAD_WIDTH  218.0f
+#define HOME_HEAD_HEIGHT 258.0f
+#define HOME_CELL_HEIGHT 125.0f
+#define SALE_CELL_HEIGHT 150.0f
+#define MAP_CELL_HEIGHT  150.0f
+#define MAP_LEFT_CELL_WIDTH     228.0f
+#define MAP_LEFT_CELL_HEIGHT    133.0f
+#define MAP_RIGHT_CELL_WIDTH    147.0f
+#define MAP_RIGHT_CELL_HEIGHT   266.0f
+#endif
+
+#ifdef IS_WIDTH_414
+#define HOME_HEAD_WIDTH  376.0f
+#define HOME_HEAD_HEIGHT 427.0f
+#define HOME_CELL_HEIGHT 207.0f
+#define SALE_CELL_HEIGHT 248.0f
+#define MAP_CELL_HEIGHT  248.0f
+#define MAP_LEFT_CELL_WIDTH     378.0f
+#define MAP_LEFT_CELL_HEIGHT    219.0f
+#define MAP_RIGHT_CELL_WIDTH    243.0f
+#define MAP_RIGHT_CELL_HEIGHT   438.0f
+#endif
+
+#define iOS_VERSION_6         ([[[UIDevice currentDevice] systemVersion] integerValue] >= 6.0)
+#define iOS_VERSION_7         ([[[UIDevice currentDevice] systemVersion] integerValue] >= 7.0)
+#define IOS_VERSION_8         ([[[UIDevice currentDevice] systemVersion] integerValue] >= 8.0)
+
+#ifdef DEBUG
+#   define DLog(fmt, ...) {NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);}
+#   define ELog(err) {if(err) DLog(@"%@", err)}
+#else
+#   define DLog(...)
+#   define ELog(err)
+#endif
+
+#if TARGET_IPHONE_SIMULATOR
+#define DEVICE_UDID     @"1234567890abcdefghij1234567890abcdefghij"
+#else
+#define DEVICE_UDID     [OpenUDID value]
+#endif
+
+#define SAFE_RELEASE(var)       [var release];var=nil;
+
+#define RGBCOLOR(r,g,b)      [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1.0]
+#define RGBACOLOR(r,g,b,a)      [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a]
+
+
+#define TABLE_BACKGROUND_COLOR RGBCOLOR(30, 33, 38)
+#define TABLE_CELL_BACKGROUND_COLOR RGBCOLOR(41, 44, 49)
+#define TABLE_HEAD_BACKGROUND_COLOR RGBCOLOR(58, 58, 70)
+#define TABLE_CELL_LINE_COLOR   [UIColor grayColor]
+
+#define LoadingImageBackgroundColor RGBCOLOR(203, 203, 203)
+#define TAB_BACKGROUND_COLOR RGBCOLOR(188, 117, 255)
+#define BUTTON_SEARCH_BACKGROUND_COLOR RGBCOLOR(65, 65, 75)
+#define TAB_SELECTED_TITLE_COLOR RGBCOLOR(199, 131, 18)
+#define TAB_TITLE_COLOR RGBCOLOR(151, 150, 150)
+#define TAB_TITLE_FONT_SIZE 9
+
+#define DB_FILE_NAME    @"appdb_v1.sqlite"
+
+#define PROJECT_CATEGORY        1
+#define EXAMINATION_CATEGORY    2
+#define GUIDE_CATEGORY          3
+#define SPECIMEN_CATEGORY       4
+
+typedef enum{
+    YContentTypeHome = 1,
+    YContentTypeSale,
+    YContentTypeMap,
+    YContentTypeWeal,
+    YContentTypeMy,
+}YContentType;
+
+#define kHttpUrl @"http://api.mchome.cn/index.php?/ums/"
+
+#define AMPAP_KEY @"2d39f64ea0644fdf71099cb67802a74b"
+
+#define APP_BACKGROUND_COLOR    RGBCOLOR(227, 231, 234)
+#define SYSTEM_SMALL_FONT   @"small font"
+#define SYSTEM_LARGE_FONT   @"large font"
+#define SYSTEM_MID_FONT     @"default font"
+#define SYSTEM_FONT_KEY     @"system font"
+
+#define SYSTEM_LARGE_IMAGE  @"large image"
+#define SYSTEM_SMALL_IMAGE  @"small image"
+#define SYSTEM_IMAGE_KEY    @"system image"
+
+#define MEDICALINFO_LAST_UPDATE_TIME @"medical last update time"
+#define MEDICALINFO_PREVIOUS_UPDATE_TIME @"medical previous update time"
+
+#define UMENG_APP_KEY @"520310e256240b2114031b7e"
+
+//新浪微博
+#define kShareSDK_AppKey @"95a4f568ac6"
+#define kShareSDK_SinaAppKey @"880122263"
+#define kShareSDK_SinaAppSecret @"1e7a2748f9bdd0835bed21737b18d5bb"
+
+//微信
+#define kShareSDK_WeiXinAppId @"wx9f05858edd5f1341"
+
+//qq
+#define kShareSDK_QQAppKey    @"100523454"
+#define kShareSDK_QQAppSecret   @"4925a4dd1dbaeb4420ae6ac23454c5c1"
+
+//SMS SDK http://mob.com
+#define kSMS_SDK_AppKey     @"6de9c45333c3"
+#define kSMS_SDK_AppSecret  @"f61e2072e5d61cdf34ba23bca5ddf6e8"
+
+#define kAppReViewURL            @"itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=521635095"
+
+#define kAppStoreURL            @"itms-apps://itunes.apple.com/cn/app/id521635095?mt=8"
+
+#define kAMAP_AppKey            @"dae6d77cffeecf297d048225d9b14723"
+
+#define DEVICE_TOKEN_UUID       @"device_token_uuid"
+#define DEVICE_IMEI             @"device_imei"
+#define GPS_LATITUDE            @"latitude"
+#define GPS_LONGITUDE           @"longitude"
+
+#define CURRENT_CITY_TITLE      @"currentCityName"
+#define CURRENT_CITY_CODE       @"currentCityCode"
+
+#define SEARCH_HOT_KEY          @"searchHotKey"
+#define MAP_TAB_INDEX           @"map_index"
