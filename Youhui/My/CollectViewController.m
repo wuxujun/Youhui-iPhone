@@ -133,8 +133,9 @@
 {
     CollectEntity * dic=[datas objectAtIndex:indexPath.row];
     if (dic) {
+        DLog(@"%d",[dic.bid intValue]);
         BrandViewController* dController=[[BrandViewController alloc]init];
-        dController.infoDict=[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",[dic.bid intValue]],@"bid",[NSString stringWithFormat:@"%d",[dic.mid intValue]],@"sid",[NSString stringWithFormat:@"%@",dic.title],@"brandName",[NSString stringWithFormat:@"%@",dic.image],@"brandLogo", nil];
+        dController.infoDict=[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",[dic.bid intValue]],@"brandId",[NSString stringWithFormat:@"%d",[dic.mid intValue]],@"mallId",[NSString stringWithFormat:@"%@",dic.title],@"brandName",[NSString stringWithFormat:@"%@",dic.image],@"brandLogo", nil];
         [self.navigationController pushViewController:dController animated:YES];
     }
 }

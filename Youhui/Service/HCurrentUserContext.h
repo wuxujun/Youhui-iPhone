@@ -44,6 +44,9 @@ typedef enum {
 
 -(void)registerNewWithMobile:(NSString *)mobile username:(NSString *)username password:(NSString *)password success:(HBOOLBlock)successBlock error:(MKNKErrorBlock)errorBlock;
 
+//设置密码
+-(void)setPassworkWithUsername:(NSString *)username password:(NSString *)password success:(HBOOLBlock)successBlock error:(MKNKErrorBlock)errorBlock;
+
 //找回密码
 -(void)getPassworkWithUsername:(NSString *)username email:(NSString *)email success:(HBOOLBlock)successBlock error:(MKNKErrorBlock)errorBlock;
 

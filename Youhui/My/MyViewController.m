@@ -189,19 +189,27 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section==0) {
         if (indexPath.row==0) {
-            MyFindViewController* dController=[[MyFindViewController alloc]init];
-            dController.hidesBottomBarWhenPushed=YES;
-            [self.navigationController pushViewController:dController animated:YES];
+            if ([[HCurrentUserContext sharedInstance] uid]) {
+                MyFindViewController* dController=[[MyFindViewController alloc]init];
+                dController.hidesBottomBarWhenPushed=YES;
+                [self.navigationController pushViewController:dController animated:YES];
+            }else{
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"Notification_OpenLogin" object:nil userInfo:nil];
+            }
         }
     }else if (indexPath.section==1) {
-        if (indexPath.row==0) {
-            CollectViewController *dController=[[CollectViewController alloc]init];
-            dController.hidesBottomBarWhenPushed=YES;
-            [self.navigationController pushViewController:dController animated:YES];
-        }else if (indexPath.row==1){
-            CommentViewController* dController=[[CommentViewController alloc]init];
-            dController.hidesBottomBarWhenPushed=YES;
-            [self.navigationController pushViewController:dController animated:YES];
+        if ([[HCurrentUserContext sharedInstance] uid]) {
+            if (indexPath.row==0) {
+                CollectViewController *dController=[[CollectViewController alloc]init];
+                dController.hidesBottomBarWhenPushed=YES;
+                [self.navigationController pushViewController:dController animated:YES];
+            }else if (indexPath.row==1){
+                CommentViewController* dController=[[CommentViewController alloc]init];
+                dController.hidesBottomBarWhenPushed=YES;
+                [self.navigationController pushViewController:dController animated:YES];
+            }
+        }else{
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"Notification_OpenLogin" object:nil userInfo:nil];
         }
     }else if(indexPath.section==2){
         if(indexPath.row==0){

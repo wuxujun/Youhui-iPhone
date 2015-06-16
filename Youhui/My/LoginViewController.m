@@ -13,6 +13,7 @@
 #import "UIView+LoadingView.h"
 #import "HCurrentUserContext.h"
 #import "StringUtils.h"
+#import "ForgotPwdViewController.h"
 #import "UIViewController+NavigationBarButton.h"
 
 @interface LoginViewController ()<UITextFieldDelegate>
@@ -115,7 +116,8 @@
 
 -(IBAction)passRequest:(id)sender
 {
-    
+    ForgotPwdViewController* dController=[[ForgotPwdViewController alloc]init];
+    [self.navigationController pushViewController:dController animated:YES];
 }
 
 

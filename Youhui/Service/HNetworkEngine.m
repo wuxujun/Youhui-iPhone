@@ -26,9 +26,13 @@
 {
     MKNetworkOperation *operation = [self operationWithURLString:urlString params:[dataAndKey objectForKey:@"content"] httpMethod:@"POST"];
     [dataAndKey enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        if (![key isEqualToString:@"content"]) {
+        DLog(@"%@  %@",obj,key);
+        if ([key isEqualToString:@"content"]) {
             DLog(@"%@  %@",obj,key);
-            [operation addFile:obj forKey:key mimeType:@"image/jpeg"];
+            NSDictionary* dc=[obj objectForKey:@"images"];
+            if ([dc objectForKey:@"image"]) {
+                [operation addFile:[dc objectForKey:@"image"] forKey:@"image" mimeType:@"image/jpeg"];
+            }
         }
 //        [operation addData:obj forKey:key];
     }];

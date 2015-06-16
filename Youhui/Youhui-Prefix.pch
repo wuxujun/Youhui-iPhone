@@ -117,6 +117,7 @@ typedef enum{
 }YContentType;
 
 #define kHttpUrl @"http://api.mchome.cn/index.php?/ums/"
+#define kHttpImageUrl            @"http://api.mchome.cn/images/"
 
 #define AMPAP_KEY @"2d39f64ea0644fdf71099cb67802a74b"
 

@@ -183,8 +183,7 @@
     }
     
     NSMutableDictionary* dic=[NSMutableDictionary dictionaryWithObjectsAndKeys:[[AppConfig getInstance] getIMEI],@"imei", nil];
-                              
-
+    
     NSMutableDictionary* params=[[NSMutableDictionary alloc]init];
     [dic setObject:mallNameStr forKey:@"mallName"];
     [dic setObject:brandNameStr forKey:@"brandName"];
@@ -206,6 +205,7 @@
     
     [self.networkEngine postDatasWithURLString:requestUrl datas:params process:^(double progress) {
     } success:^(MKNetworkOperation *completedOperation, id result) {
+        DLog(@"%@",result);
         [self alertRequestResult:@"上传成功,稍后将由工作人员审批" isDisses:NO];
     } error:^(NSError *error) {
         [self alertRequestResult:@"上传失败" isPop:NO];

@@ -18,6 +18,7 @@
 #import "UMSocial.h"
 #import "CollectEntity.h"
 #import "SIAlertView.h"
+#import "HCurrentUserContext.h"
 #import "BCommentViewController.h"
 
 @interface BrandViewController()<UIScrollViewDelegate,UITableViewDelegate,UITableViewDataSource,YSearchDisplayDelegate,BrandHeadViewDelegate,BrandFootViewDelegate,UIAlertViewDelegate,UMSocialUIDelegate>
@@ -296,30 +297,35 @@
             break;
         }
         case 2:{
+            
             DLog(@"%@",self.infoDict);
-            CollectEntity* entity=[CollectEntity MR_findFirstByAttribute:@"bid" withValue:[NSNumber numberWithInt:[[self.infoDict objectForKey:@"bid"] intValue]]];
-            if (entity!=nil) {
-                [entity MR_deleteEntity];
-                [self alertRequestResult:@"取消收藏成功" isPop:NO];
-                [footView isCollect:NO];
+            if ([[HCurrentUserContext sharedInstance] uid]) {
+                CollectEntity* entity=[CollectEntity MR_findFirstByAttribute:@"bid" withValue:[NSNumber numberWithInt:[[self.infoDict objectForKey:@"brandId"] intValue]]];
+                if (entity!=nil) {
+                    [entity MR_deleteEntity];
+                    [self alertRequestResult:@"取消收藏成功" isPop:NO];
+                    [footView isCollect:NO];
+                }else{
+                    
+                    CollectEntity *entity=[CollectEntity MR_createEntity];
+                    [entity setTitle:[self.infoDict objectForKey:@"brandName"]];
+                    [entity setImage:[self.infoDict objectForKey:@"brandLogo"]];
+                    [entity setBid:[NSNumber numberWithInt:[[self.infoDict objectForKey:@"brandId"] intValue]]];
+                    [entity setMid:[NSNumber numberWithInt:[[self.infoDict objectForKey:@"mallId"] intValue]]];
+                    [entity setImage:[self.infoDict objectForKey:@"brandLogo"]];
+                    
+                    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreWithCompletion:^(BOOL contextDidSave, NSError *error) {
+                        if (contextDidSave) {
+                            DLog(@"%d",contextDidSave);
+                            [self alertRequestResult:@"收藏成功" isPop:NO];
+                            [footView isCollect:YES];
+                        }
+                    }];
+                }
             }else{
-            
-                CollectEntity *entity=[CollectEntity MR_createEntity];
-                [entity setTitle:[self.infoDict objectForKey:@"brandName"]];
-                [entity setImage:[self.infoDict objectForKey:@"brandLogo"]];
-                [entity setBid:[NSNumber numberWithInt:[[self.infoDict objectForKey:@"bid"] intValue]]];
-                [entity setMid:[NSNumber numberWithInt:[[self.infoDict objectForKey:@"sid"] intValue]]];
-                [entity setImage:[self.infoDict objectForKey:@"brandLogo"]];
-            
-                [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreWithCompletion:^(BOOL contextDidSave, NSError *error) {
-                    if (contextDidSave) {
-                        DLog(@"%d",contextDidSave);
-                        [self alertRequestResult:@"收藏成功" isPop:NO];
-                        [footView isCollect:YES];
-                    }
-
-                }];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"Notification_OpenLogin" object:nil userInfo:nil];
             }
+            
             break;
         }
         default:

@@ -17,8 +17,9 @@
 #import "AppConfig.h"
 #import "HCurrentUserContext.h"
 #import "UserDefaultHelper.h"
+#import "PathHelper.h"
 
-@interface MyInfoViewController ()<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate>
+@interface MyInfoViewController ()<UINavigationControllerDelegate,UITableViewDataSource,UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate>
 {
     NSString*       nickStr;
     NSString*       cityStr;
@@ -79,7 +80,41 @@
 
 -(IBAction)openCamera:(id)sender
 {
-    [self showImagePicker];
+//    [self showImagePicker];
+    if (IOS_VERSION_8) {
+        UIAlertController* alert=[UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        UIAlertAction* cancelAction=[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+            
+        }];
+        UIAlertAction* cameraAction=[UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [self showImagePicker:YES];
+        }];
+        
+        UIAlertAction* photoAction=[UIAlertAction actionWithTitle:@"从相册获取" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [self showImagePicker:NO];
+        }];
+        
+        [alert addAction:cancelAction];
+        BOOL hasCamera=[UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+        if (hasCamera) {
+            [alert addAction:cameraAction];
+        }
+        [alert addAction:photoAction];
+        [self presentViewController:alert animated:YES completion:^{
+            
+        }];
+        
+    }else{
+        UIActionSheet* sheet=[[UIActionSheet alloc]initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"从相册获取", nil];
+        BOOL hasCamera=[UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+        if (hasCamera) {
+            [sheet addButtonWithTitle:@"拍照"];
+        }
+        
+        sheet.actionSheetStyle=UIActionSheetStyleAutomatic;
+        sheet.tag=101;
+        [sheet showInView:self.view];
+    }
 }
 
 -(IBAction)save:(id)sender
@@ -101,7 +136,31 @@
         [UserDefaultHelper setObject:filePath forKey:@"user_avatar_url"];
     }
     
-    [self alertRequestResult:@"保存成功." isPop:YES];
+    NSMutableDictionary* dic=[NSMutableDictionary dictionaryWithObjectsAndKeys:[[AppConfig getInstance] getIMEI],@"imei", nil];
+    
+    NSMutableDictionary* params=[[NSMutableDictionary alloc]init];
+    [dic setObject:nickStr forKey:@"userNick"];
+    [dic setObject:cityStr forKey:@"cityName"];
+    [dic setObject:[[HCurrentUserContext sharedInstance] uid] forKey:@"uid"];
+    NSMutableDictionary *imgs=[[NSMutableDictionary alloc]init];
+    if (filePath) {
+        [imgs setObject:filePath forKey:@"image"];
+        [params setObject:filePath forKey:@"image"];
+    }
+    [dic setObject:imgs forKey:@"images"];
+    
+    [params setObject:dic forKey:@"content"];
+    DLog(@"%@",params);
+    
+    NSString *requestUrl = [NSString stringWithFormat:@"%@uInfo",kHttpUrl];
+    [self.networkEngine postDatasWithURLString:requestUrl datas:params process:^(double progress) {
+    } success:^(MKNetworkOperation *completedOperation, id result) {
+        DLog(@"%@",result);
+        [self alertRequestResult:@"更新成功" isPop:YES];
+    } error:^(NSError *error) {
+        [self alertRequestResult:@"更新失败" isPop:NO];
+    }];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -241,15 +300,27 @@
     
 }
 
--(void)showImagePicker
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    BOOL hasCamera=[UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
-    if (!hasCamera) {
-        [self alertRequestResult:@"对不起,拍照功能不支持" isPop:NO];
+   DLog("%ld  %ld",(long)actionSheet.tag,(long)buttonIndex);
+    if (buttonIndex==0) {
+        [self showImagePicker:NO];
+    }else if(buttonIndex==1){
+        [self showImagePicker:YES];
     }
+}
+
+
+-(void)showImagePicker:(BOOL)isCamera
+{
+    
     UIImagePickerController* dController=[[UIImagePickerController alloc]init];
     dController.delegate=self;
-    dController.sourceType=UIImagePickerControllerSourceTypeCamera;
+    if (isCamera) {
+        dController.sourceType=UIImagePickerControllerSourceTypeCamera;
+    }else{
+        dController.sourceType=UIImagePickerControllerSourceTypePhotoLibrary;
+    }
     [self presentViewController:dController animated:YES completion:^{
         
     }];
@@ -267,7 +338,7 @@
     NSString *curTime=[formatter stringFromDate:[NSDate date] ];
     if ([mediaType isEqualToString:@"public.image"]) {
         fileName=[NSString stringWithFormat:@"%@.jpg",curTime];
-        filePath=[NSString stringWithFormat:@"%@/%@",[[AppConfig getInstance] getDownPath],fileName];
+        filePath=[PathHelper filePathInDocument:fileName];
         
         UIImage* image=[info objectForKey:UIImagePickerControllerOriginalImage];
         

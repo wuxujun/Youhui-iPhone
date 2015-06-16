@@ -10,7 +10,9 @@
 #import "BrandViewController.h"
 #import "UIViewController+NavigationBarButton.h"
 #import "CollectEntity.h"
+#import "HCurrentUserContext.h"
 #import "UIImageView+AFNetworking.h"
+#import "UIView+LoadingView.h"
 
 @interface CommentViewController ()<UITableViewDataSource,UITableViewDelegate>
 
@@ -50,7 +52,7 @@
     [lab setTextAlignment:NSTextAlignmentCenter];
     [lab setTextColor:[UIColor whiteColor]];
     self.navigationItem.titleView=lab;
-    [self loadData];
+    [self requestData];
 }
 
 
@@ -62,6 +64,26 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+}
+
+-(void)requestData
+{
+    NSString *url = [NSString stringWithFormat:@"%@myComment",kHttpUrl];
+    NSMutableDictionary* params=[NSMutableDictionary dictionary];
+    [params setObject:[NSString stringWithFormat:@"%@",[[HCurrentUserContext sharedInstance] uid] ] forKey:@"uid"];
+    [self.view showHUDLoadingView:YES];
+    [self.networkEngine postOperationWithURLString:url params:params success:^(MKNetworkOperation *completedOperation, id result) {
+        DLog(@"%@",result);
+        NSDictionary* rs=(NSDictionary*)result;
+        NSArray * arr=[rs objectForKey:@"root"];
+        [datas removeAllObjects];
+        [datas addObjectsFromArray:arr];
+        [mTableView reloadData];
+        [self.view showHUDLoadingView:NO];
+    } error:^(NSError *error) {
+        DLog(@"get home fail");
+        [self alertRequestResult:@"数据请求失败." isPop:NO];
+    }];
 }
 
 -(void)loadData
@@ -101,28 +123,27 @@
     }
     CGRect bounds=self.view.frame;
     cell.backgroundColor=TABLE_CELL_BACKGROUND_COLOR;
-    CollectEntity * dic=[datas objectAtIndex:indexPath.row];
+    NSDictionary * dic=[datas objectAtIndex:indexPath.row];
     if (dic) {
         
-        UIImageView* img=[[UIImageView alloc]initWithFrame:CGRectMake(10, 4, 56, 56)];
-        [img setImageWithURL:[NSURL URLWithString:dic.image] placeholderImage:[UIImage imageNamed:@"ic_normal"]];
-        img.layer.cornerRadius=28;
+        UIImageView* img=[[UIImageView alloc]initWithFrame:CGRectMake(10, (64-48)/2, 48, 48)];
+        [img setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kHttpImageUrl,[dic objectForKey:@"image"]]] placeholderImage:[UIImage imageNamed:@"ic_normal"]];
+        img.layer.cornerRadius=24;
         img.layer.masksToBounds=YES;
         [cell addSubview:img];
         
         UILabel* label=[[UILabel alloc]initWithFrame:CGRectMake(80, 10, bounds.size.width-100, 26)];
         [label setTextColor:[UIColor whiteColor]];
         [label setFont:[UIFont systemFontOfSize:18.0f]];
-        [label setText:dic.title];
+        [label setText:[dic objectForKey:@"comment"]];
         [cell addSubview:label];
-        
     }
     UIView* line=[[UIView alloc]initWithFrame:CGRectMake(70, 63, bounds.size.width-70, 1)];
     [line setBackgroundColor:TABLE_CELL_LINE_COLOR];
     [cell addSubview:line];
     
     cell.selectionStyle=UITableViewCellSelectionStyleNone;
-    cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
+    cell.accessoryType=UITableViewCellAccessoryNone;
     
     return cell;
 }
@@ -130,12 +151,6 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    CollectEntity * dic=[datas objectAtIndex:indexPath.row];
-    if (dic) {
-        BrandViewController* dController=[[BrandViewController alloc]init];
-        dController.infoDict=[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",[dic.bid intValue]],@"bid",[NSString stringWithFormat:@"%d",[dic.mid intValue]],@"sid",[NSString stringWithFormat:@"%@",dic.title],@"brandName",[NSString stringWithFormat:@"%@",dic.image],@"brandLogo", nil];
-        [self.navigationController pushViewController:dController animated:YES];
-    }
 }
 
 

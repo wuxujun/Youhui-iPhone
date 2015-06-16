@@ -12,6 +12,7 @@
 #import "UIViewController+NavigationBarButton.h"
 #import "UIImageView+AFNetworking.h"
 #import "UIView+LoadingView.h"
+#import "HCurrentUserContext.h"
 
 @interface CommentEViewController ()<UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,UIAlertViewDelegate>
 {
@@ -77,7 +78,11 @@
             DLog(@"%@",self.textField.text);
             
             NSString *url = [NSString stringWithFormat:@"%@addComment",kHttpUrl];
-            NSMutableDictionary* params=[NSMutableDictionary dictionaryWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",mallId],@"mallId",[NSString stringWithFormat:@"%d",brandId],@"brandId",self.textField.text,@"comment",@"133",@"mobile", nil]];
+            NSMutableDictionary* params=[NSMutableDictionary dictionaryWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",mallId],@"mallId",[NSString stringWithFormat:@"%d",brandId],@"brandId",self.textField.text,@"comment", nil]];
+            if ([[HCurrentUserContext sharedInstance] uid]) {
+                [params setObject:[[HCurrentUserContext sharedInstance] username] forKey:@"mobile"];
+                [params setObject:[[HCurrentUserContext sharedInstance] uid] forKey:@"uid"];
+            }
             
             [self.view showHUDLoadingView:YES];
             [self.networkEngine postOperationWithURLString:url params:params success:^(MKNetworkOperation *completedOperation, id result) {
@@ -157,7 +162,7 @@
             
             self.textField=[[UITextField alloc] initWithFrame:CGRectMake(10, 5, bounds.size.width-20, 200)];
             [self.textField setBackground:[[UIImage imageNamed:@"ic_input_bg"] stretchableImageWithLeftCapWidth:24 topCapHeight:24]];
-            [self.textField setTextColor:TAB_BACKGROUND_COLOR];
+            [self.textField setTextColor:[UIColor whiteColor]];
             [self.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
             [self.textField setTag:TEXT_FIELD];
             [self.textField setPlaceholder:@"请填写评论"];

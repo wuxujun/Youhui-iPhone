@@ -112,6 +112,7 @@
             [titleLabel setText:[dc objectForKey:@"brandName"]];
         }
         NSArray * arr=[rs objectForKey:@"root"];
+        [datas removeAllObjects];
         [datas addObjectsFromArray:arr];
         [mTableView reloadData];
         [self.view showHUDLoadingView:NO];
@@ -182,9 +183,10 @@
    float h=44.0;
     if (dic) {
         h=[self cellHeight:[dic objectForKey:@"comment"]];
+        DLog(@"%@",dic);
         
         UIImageView* img=[[UIImageView alloc]initWithFrame:CGRectMake(10, 5, 36, 36)];
-        [img setImageWithURL:[NSURL URLWithString:[dic objectForKey:@"brandLogo"]] placeholderImage:[UIImage imageNamed:@"ic_normal"]];
+        [img setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kHttpImageUrl,[dic objectForKey:@"image"]]] placeholderImage:[UIImage imageNamed:@"ic_normal"]];
         img.layer.cornerRadius=18;
         img.layer.masksToBounds=YES;
         [cell addSubview:img];

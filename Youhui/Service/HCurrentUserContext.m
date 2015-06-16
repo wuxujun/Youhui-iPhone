@@ -129,6 +129,27 @@ static HCurrentUserContext *sharedHCurrentUserContext = nil;
     }];
 }
 
+-(void)setPassworkWithUsername:(NSString *)username password:(NSString *)password success:(HBOOLBlock)successBlock error:(MKNKErrorBlock)errorBlock{
+    NSMutableDictionary *params = [@{@"username":username,@"password":[password md5],@"mobile":username} mutableCopy];
+    NSString *url = [NSString stringWithFormat:@"%@resetpass",kHttpUrl];
+    [self.networkEngine postOperationWithURLString:url params:params  success:^(MKNetworkOperation *completedOperation, id result) {
+        NSDictionary *resultDict = result;
+        BOOL isSuccess = [resultDict[@"success"] boolValue];
+        if (isSuccess) {
+            //重置密码
+            successBlock(isSuccess);
+        } else {
+            NSString *message = [result objectForKey:@"errorMsg"] ? : @"重置密码错误";
+            NSError *error = [NSError errorWithDomain:message code:-1 userInfo:nil];
+            if (errorBlock != nil) {
+                errorBlock(error);
+            }
+        }
+    } error:^(NSError *error) {
+        errorBlock(error);
+    }];
+}
+
 -(void)getPassworkWithUsername:(NSString *)username email:(NSString *)email success:(HBOOLBlock)successBlock error:(MKNKErrorBlock)errorBlock{
     NSMutableDictionary *params = [@{@"username":username,@"email":email} mutableCopy];
     NSString *url = [NSString stringWithFormat:@"%@getPassword",kHttpUrl];
