@@ -124,7 +124,8 @@
         locManager.desiredAccuracy=kCLLocationAccuracyBest;
         locManager.distanceFilter=1000;
         if (IOS_VERSION_8) {
-            [locManager requestAlwaysAuthorization];
+//            [locManager requestAlwaysAuthorization];
+            [locManager requestWhenInUseAuthorization];
         }
     }
     _search=[[AMapSearchAPI alloc]initWithSearchKey:AMPAP_KEY Delegate:self];

@@ -70,9 +70,11 @@ static HCurrentUserContext *sharedHCurrentUserContext = nil;
         BOOL isSuccess = [resultDict[@"success"] boolValue];
         if (isSuccess) {
             NSDictionary *userDict = resultDict[@"data"];
-            myself.uid = userDict[@"id"];
-            myself.username = userDict[@"username"];
-            myself.mobile=userDict[@"mobile"];
+            if (userDict!=NULL) {
+                myself.uid = userDict[@"id"];
+                myself.username = userDict[@"username"];
+                myself.mobile=userDict[@"mobile"];
+            }
 //            myself.isReport = [userDict[@"isReport"] boolValue];
 //            myself.reportArea = userDict[@"reportArea"];
 //            myself.imageUrl = userDict[@"image"];
